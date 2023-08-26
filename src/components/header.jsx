@@ -1,4 +1,4 @@
-function Heading() {
+function Heading(props) {
     return (
         <div id="heading">
             <div className="div1">
@@ -9,12 +9,12 @@ function Heading() {
             <div className="div2">
                 <div className="temp-div">
                     <p>Score:</p>
-                    <p id="score">0</p>
+                    <p id="score">{props.points}</p>
                 </div>
 
                 <div className="temp-div">
                     <p>Best Score:</p>
-                    <p id="best-score">0</p>
+                    <p id="best-score">{props.bestPoints}</p>
                 </div>
             </div>
         </div>

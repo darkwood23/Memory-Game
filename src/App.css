@@ -43,19 +43,19 @@ body {
 }
 
 .pokemon-images {
-  width: 22rem;
-  height: 23rem;
+  width: 13.5rem;
+  height: 17rem;
   border: 2px solid white;
 }
 
 #cell-holder {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
   gap: 2rem;
   margin: 1rem;
 }
 
 .cell:hover {
-  box-shadow: 10px 10px 10px 10px white;
+  box-shadow: 2px 2px 40px red;
   cursor: pointer;
 }
