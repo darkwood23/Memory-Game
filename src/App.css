@@ -59,3 +59,39 @@ body {
   box-shadow: 2px 2px 40px red;
   cursor: pointer;
 }
+
+.screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  flex-direction: column;
+  gap: 2rem;
+  font-size: 2rem;
+  background-color: yellow;
+  color: black;
+}
+
+.play-again {
+  font-size: 2rem;
+  background: black;
+  color: yellow;
+  border: 2px solid black;
+  padding: 12px;
+  border-radius: 0.4rem;
+  transition: transform 0.3s ease-in-out;
+}
+
+.play-again:hover {
+  background-color: yellow;
+  color: black;
+  transform: scale(1.05);
+}
+
+#root,
+html,
+body {
+  height: 100%;
+  width: 100%;
+}
