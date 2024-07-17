@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { v4 as uuid4 } from "uuid";
 
-function Fetcher(props) {
+function Fetcher({ reset, increment, level }) {
     const [pokemonNames, setPokemonNames] = useState([
         "pikachu",
         "alakazam",
@@ -17,6 +17,21 @@ function Fetcher(props) {
         "gengar",
         "zapdos",
     ]);
+
+    useEffect(() => {
+        if (level !== "1") {
+            setPokemonNames((prevPoki) => [
+                ...prevPoki,
+                "charizard",
+                "lucario",
+                "charmander",
+                "darkrai",
+                "espeon",
+                "blaziken",
+            ]);
+        }
+    }, []);
+
     const [pokemons, setPokemon] = useState([]);
     const [tempArray, setTempArray] = useState([]);
 
@@ -24,62 +39,74 @@ function Fetcher(props) {
         const fetchData = async () => {
             try {
                 const requests = pokemonNames.map(async (pokemon) => {
-                    const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemon}`);
+                    const response = await axios.get(
+                        `https://pokeapi.co/api/v2/pokemon/${pokemon}`
+                    );
                     return {
                         id: uuid4(),
                         pokeName: pokemon,
                         img: response.data.sprites.front_default,
                     };
                 });
-    
+
                 const newPokemonData = await Promise.all(requests);
+                
                 setPokemon(newPokemonData);
             } catch (error) {
                 console.error(error);
             }
         };
-    
+
         if (pokemonNames.length > 0) {
             fetchData();
         }
     }, [pokemonNames]);
 
     const createArray = (pok) => {
-        let alreadyExists = false
+        let alreadyExists = false;
 
-        for(let i = 0; i <= tempArray.length; i++) {
-            if(tempArray[i] === pok) {
-                alreadyExists = true
-                setTempArray(() => [])
-                props.reset()
+        for (let i = 0; i <= tempArray.length; i++) {
+            if (tempArray[i] === pok) {
+                alreadyExists = true;
+                setTempArray(() => []);
+                reset();
             }
         }
 
-        if(!alreadyExists) {
-            setTempArray((tmp) => [...tmp, pok])
-            props.increment()
+        if (!alreadyExists) {
+            setTempArray((tmp) => [...tmp, pok]);
+            increment();
         }
 
-        arrange()
-    }
+        arrange();
+    };
 
     const arrange = () => {
         const shuffledArray = [...pokemons];
         for (let i = shuffledArray.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
-            [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+            [shuffledArray[i], shuffledArray[j]] = [
+                shuffledArray[j],
+                shuffledArray[i],
+            ];
         }
-        console.log(shuffledArray)
         setPokemon(shuffledArray);
-    }
+    };
 
     return (
         <div id="cell-holder">
             {pokemons.map((poke) => {
                 return (
-                    <div className="cell" key={poke.id} name={poke.pokeName} onClick={() => createArray(poke.pokeName)}>
+                    <div
+                        className="cell"
+                        key={poke.id}
+                        name={poke.pokeName}
+                        onClick={() => createArray(poke.pokeName)}
+                    >
                         <img src={poke.img} alt="" className="pokemon-images" />
-                        <h2 className="pokemon-names">{poke.pokeName}</h2>
+                        
+                        <h2 className="pokemon-names">{level === "3" ? null : poke.pokeName}</h2>
+                        
                     </div>
                 );
             })}
