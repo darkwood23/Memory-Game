@@ -1,68 +1,117 @@
-import { useEffect, useState } from "react"
-import axios from "axios"
-import { v4 as uuid4} from 'uuid'
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { v4 as uuid4 } from "uuid";
 
-function Fetcher(props) {
-    const [images, setImages] = useState({})
-    const [pokemons, setPokemon] = useState(
-        [
-            {pokeName: "pikachu", id: uuid4(), img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/25.svg"},
-            {pokeName: "alakazam", id: uuid4(), img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/65.svg"},
-            {pokeName: "alomomola", id: uuid4(), img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/594.svg"},
-            {pokeName: "bayleef", id: uuid4(), img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/153.svg"},
-            {pokeName: "cacturne", id: uuid4(), img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/332.svg"},
-            {pokeName: "haunter", id: uuid4(), img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/93.svg"},
-            {pokeName: "exeggutor", id: uuid4(), img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/103.svg"},
-            {pokeName: "electabuzz", id: uuid4(), img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/125.svg"},
-            {pokeName: "psyduck", id: uuid4(), img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/54.svg"},
-            {pokeName: "cascoon", id: uuid4(), img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/268.svg"},
-            {pokeName: "gengar", id: uuid4(), img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/94.svg"},
-            {pokeName: "zapdos", id: uuid4(), img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/145.svg"},
-        ]
-    )
-    const [tempArray, setTempArray] = useState([])
-    const [randomizedArray, setRandomizedArray] = useState([...pokemons])
+function Fetcher({ reset, increment, level }) {
+    const [pokemonNames, setPokemonNames] = useState([
+        "pikachu",
+        "alakazam",
+        "alomomola",
+        "bayleef",
+        "cacturne",
+        "haunter",
+        "exeggutor",
+        "mewtwo",
+        "psyduck",
+        "cascoon",
+        "gengar",
+        "zapdos",
+    ]);
+
+    useEffect(() => {
+        if (level !== "1") {
+            setPokemonNames((prevPoki) => [
+                ...prevPoki,
+                "charizard",
+                "lucario",
+                "charmander",
+                "darkrai",
+                "espeon",
+                "blaziken",
+            ]);
+        }
+    }, []);
+
+    const [pokemons, setPokemon] = useState([]);
+    const [tempArray, setTempArray] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const requests = pokemonNames.map(async (pokemon) => {
+                    const response = await axios.get(
+                        `https://pokeapi.co/api/v2/pokemon/${pokemon}`
+                    );
+                    return {
+                        id: uuid4(),
+                        pokeName: pokemon,
+                        img: response.data.sprites.front_default,
+                    };
+                });
+
+                const newPokemonData = await Promise.all(requests);
+                
+                setPokemon(newPokemonData);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        if (pokemonNames.length > 0) {
+            fetchData();
+        }
+    }, [pokemonNames]);
 
     const createArray = (pok) => {
-        let alreadyExists = false
+        let alreadyExists = false;
 
-        for(let i = 0; i <= tempArray.length; i++) {
-            if(tempArray[i] === pok) {
-                alreadyExists = true
-                setTempArray(() => [])
-                props.reset()
+        for (let i = 0; i <= tempArray.length; i++) {
+            if (tempArray[i] === pok) {
+                alreadyExists = true;
+                setTempArray(() => []);
+                reset();
             }
         }
 
-        if(!alreadyExists) {
-            setTempArray((tmp) => [...tmp, pok])
-            props.increment()
+        if (!alreadyExists) {
+            setTempArray((tmp) => [...tmp, pok]);
+            increment();
         }
 
-        arrange()
-    }
+        arrange();
+    };
 
     const arrange = () => {
-        const shuffledArray = [...randomizedArray];
+        const shuffledArray = [...pokemons];
         for (let i = shuffledArray.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
-            [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+            [shuffledArray[i], shuffledArray[j]] = [
+                shuffledArray[j],
+                shuffledArray[i],
+            ];
         }
         setPokemon(shuffledArray);
-    }
+    };
 
     return (
         <div id="cell-holder">
             {pokemons.map((poke) => {
                 return (
-                    <div className="cell" key={poke.id} name={poke.pokeName} onClick={() => createArray(poke.pokeName)}>
-                        <img src={poke.img} alt="" className="pokemon-images"/>
-                        <h2 className="pokemon-names">{poke.pokeName}</h2>
+                    <div
+                        className="cell"
+                        key={poke.id}
+                        name={poke.pokeName}
+                        onClick={() => createArray(poke.pokeName)}
+                    >
+                        <img src={poke.img} alt="" className="pokemon-images" />
+                        
+                        <h2 className="pokemon-names">{level === "3" ? null : poke.pokeName}</h2>
+                        
                     </div>
-                )
+                );
             })}
         </div>
-    )
+    );
 }
 
-export default Fetcher 
+export default Fetcher;
